@@ -1,0 +1,5 @@
+{
+  "name": "AutoInserat Pro AI",
+  "description": "Ein intelligenter Assistent für Autohäuser, der Fahrzeugscheine analysiert und professionelle Inseratstexte sowie Plattform-Payloads (Mobile.de/AutoScout24) generiert.",
+  "requestFramePermissions": []
+}
