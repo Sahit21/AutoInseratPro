@@ -1,35 +1,42 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { AuthGate } from './components/AuthGate';
-import { Login } from './pages/Login';
-import { Signup } from './pages/Signup';
-import { Paywall } from './pages/Paywall';
-import { Pricing } from './pages/Pricing';
-import { MainApp } from './components/MainApp';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { useAuth } from './hooks/useAuth'
+import { AuthGuard } from './components/AuthGuard'
+import { Login } from './pages/Login'
+import { Signup } from './pages/Signup'
+import { Dashboard } from './pages/Dashboard'
+import { Pricing } from './pages/Pricing'
+import { Success } from './pages/Success'
 
-const App: React.FC = () => {
+function App() {
+  const { loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/paywall" element={<Paywall />} />
-          <Route
-            path="/"
-            element={
-              <AuthGate>
-                <MainApp />
-              </AuthGate>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
-  );
-};
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/success" element={<Success />} />
+        <Route 
+          path="/" 
+          element={
+            <AuthGuard fallback={<Navigate to="/login" replace />}>
+              <Dashboard />
+            </AuthGuard>
+          } 
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  )
+}
 
-export default App;
+export default App
