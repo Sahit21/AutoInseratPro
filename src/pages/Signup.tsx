@@ -12,9 +12,11 @@ export function Signup() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null)
 
+  const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/'
+
   // Redirect if already logged in
   if (user) {
-    navigate('/')
+    navigate(redirectTo)
     return null
   }
 
@@ -58,9 +60,9 @@ export function Signup() {
       setPassword('')
       setConfirmPassword('')
       
-      // Redirect to login after a short delay
+      // Redirect to login after a short delay, preserving redirect param
       setTimeout(() => {
-        navigate('/login')
+        navigate(`/login?redirect=${encodeURIComponent(redirectTo)}`)
       }, 2000)
     } catch (error) {
       setMessage({ 

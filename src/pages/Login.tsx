@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
@@ -11,9 +11,11 @@ export function Login() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null)
 
+  const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/'
+
   // Redirect if already logged in
   if (user) {
-    navigate('/')
+    navigate(redirectTo)
     return null
   }
 
@@ -32,8 +34,7 @@ export function Login() {
         throw error
       }
 
-      setMessage({ type: 'success', text: 'Successfully signed in!' })
-      navigate('/')
+      navigate(redirectTo)
     } catch (error) {
       setMessage({ 
         type: 'error', 

@@ -5,6 +5,7 @@ export interface StripeProduct {
   mode: 'payment' | 'subscription';
   price: number;
   currency: string;
+  paymentLink?: string;
 }
 
 export const stripeProducts: StripeProduct[] = [
@@ -14,7 +15,8 @@ export const stripeProducts: StripeProduct[] = [
     description: '50 Inserate / Monat\nPremium KI-Texte & SEO\nPro Bildveredelung (Hintergründe)\nExport zu mobile.de & AutoScout24\nEigene Vorlagen & Branding',
     mode: 'subscription',
     price: 59.00,
-    currency: 'EUR'
+    currency: 'EUR',
+    paymentLink: 'https://buy.stripe.com/test_14AbJ12Qr3xicKFarE0Jq02',
   }
 ];
 

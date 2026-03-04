@@ -1,5 +1,7 @@
 import { ReactNode } from 'react'
+import { Navigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useSubscription } from '../hooks/useSubscription'
 
 interface AuthGuardProps {
   children: ReactNode
@@ -7,9 +9,10 @@ interface AuthGuardProps {
 }
 
 export function AuthGuard({ children, fallback }: AuthGuardProps) {
-  const { user, loading } = useAuth()
+  const { user, loading: authLoading } = useAuth()
+  const { isActive, isTrialing, loading: subLoading } = useSubscription()
 
-  if (loading) {
+  if (authLoading || subLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -18,14 +21,11 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
   }
 
   if (!user) {
-    return fallback || (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
-          <p className="text-gray-600">Please sign in to access this page.</p>
-        </div>
-      </div>
-    )
+    return fallback || <Navigate to="/login" replace />
+  }
+
+  if (!isActive && !isTrialing) {
+    return <Navigate to="/pricing" replace />
   }
 
   return <>{children}</>

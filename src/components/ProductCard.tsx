@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { StripeProduct } from '../stripe-config'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
@@ -9,21 +10,33 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handlePurchase = async () => {
     if (!user) {
-      setError('Please sign in to purchase')
+      navigate('/login?redirect=/pricing')
       return
     }
 
+    // Use direct Payment Link if configured
+    if (product.paymentLink) {
+      const url = new URL(product.paymentLink)
+      if (user.email) {
+        url.searchParams.set('prefilled_email', user.email)
+      }
+      window.location.href = url.toString()
+      return
+    }
+
+    // Fall back to Edge Function checkout
     setLoading(true)
     setError(null)
 
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      
+
       if (!session) {
         throw new Error('No active session')
       }
@@ -48,7 +61,7 @@ export function ProductCard({ product }: ProductCardProps) {
       }
 
       const { url } = await response.json()
-      
+
       if (url) {
         window.location.href = url
       } else {
